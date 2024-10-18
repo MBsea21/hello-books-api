@@ -14,8 +14,8 @@ books = [
 
 book_bp = Blueprint("book",__name__)
 
-@book_bp.get("/books")
-def print_books_info():
+@book_bp.get("/book")
+def print_first_book_info():
     dictionary_list = []
     for book in books: 
         book_dictionary = {
@@ -24,5 +24,5 @@ def print_books_info():
             "description" : book.description
         }
         dictionary_list.append(book_dictionary)
-    return dictionary_list
+    return dictionary_list[0]
 
