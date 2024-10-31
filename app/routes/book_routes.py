@@ -25,6 +25,7 @@ def create_book():
 
 @books_bp.get("")
 def get_books():
+    
     query = db.select(Book)
 
     title_param = request.args.get("title")
@@ -35,8 +36,15 @@ def get_books():
     if description_param:
         query = query.where(Book.description.ilike(f"%{description_param}%"))
 
-    query = query.order_by(Book.id)
-    books = db.session.scalars(query.order_by(Book.id))
+    sort_param = request.args.get("sort")
+
+    if sort_param: 
+        attribute = validate_attribute(sort_param)
+        query = query.order_by(attribute)
+    else: 
+        query = query.order_by(Book.id)
+    
+    books = db.session.scalars(query)
 
     books_response = []
     for book in books: 
@@ -55,7 +63,6 @@ def get_dict(book):
         "title": book.title,
         "description": book.description
     }
-
 
 def validate_book (book_id):
     try: 
@@ -92,3 +99,12 @@ def delete_book(book_id):
     db.session.commit()
 
     return Response(status=204, mimetype="application/json")
+
+
+def validate_attribute(attribute): 
+    try: 
+        attribute = getattr(Book,attribute)
+    except: 
+        response = ({"message": f"{attribute} key invalid"}, 400)
+        abort(make_response(response))
+    return attribute
