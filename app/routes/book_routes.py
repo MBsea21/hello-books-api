@@ -3,9 +3,9 @@ from flask import Blueprint, abort, make_response, request, Response
 from app.models.book import Book
 from ..db import db
 
-books_bp = Blueprint("books_bp", __name__, url_prefix="/books")
+bp = Blueprint("bp", __name__, url_prefix="/books")
 
-@books_bp.post("")
+@bp.post("")
 def create_book():
     request_body = request.get_json()
 
@@ -22,7 +22,7 @@ def create_book():
     response = new_book.to_dict()
     return response, 201
 
-@books_bp.get("")
+@bp.get("")
 def get_books():
     
     query = db.select(Book)
@@ -50,7 +50,7 @@ def get_books():
         books_response.append(book.to_dict())
     return books_response
 
-@books_bp.get("/<book_id>")
+@bp.get("/<book_id>")
 def get_one_book(book_id):
     book = validate_book(book_id)
     return book.to_dict()
@@ -71,7 +71,7 @@ def validate_book (book_id):
     
     return book
 
-@books_bp.put("/<book_id>")
+@bp.put("/<book_id>")
 def update_book(book_id):
     book = validate_book(book_id)
     request_body = request.get_json()
@@ -85,7 +85,7 @@ def update_book(book_id):
     return response_body
 
 
-@books_bp.delete("/<book_id>")
+@bp.delete("/<book_id>")
 def delete_book(book_id):
     book = validate_book(book_id)
     db.session.delete(book)
